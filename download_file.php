@@ -10,7 +10,7 @@
 	}
 
 	$file = basename($_GET["file"]);
-	$filepath = "/var/www/html/files/".$__connected["USERNAME"]."/".$file;
+	$filepath = "files/".$__connected["username"]."/".$file;
 
 	if (file_exists($filepath)) {
 		header("Content-Description: File Transfer");

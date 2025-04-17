@@ -3,6 +3,7 @@
 	$LOGIN_FAILED = 0;
 
 	require("forced.php");
+	require("lib_login.php");
 
 	if(isset($_REQUEST["username"]) && isset($_REQUEST["password"]))
 	{
@@ -18,7 +19,7 @@
 		<form action="#" method="POST">
 			<img src="alexcloud.png"/>
 			<?php if($LOGIN_FAILED == 1) printf('<div>Login Failed !</div>'); ?>
-			<input type="text" placeholder="Username" name="username"/>
+			<input type="text" placeholder="username" name="username"/>
 			<input type="password" placeholder="Password" name="password"/>
 			<input type="submit" value="Connect !"/>
 			<br>

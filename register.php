@@ -39,7 +39,7 @@
 		<form action="#" method="POST">
 			<img src="alexcloud.png"/>
 			<?php if($LOGIN_FAILED == 1) printf('<div>Register Failed, check your entries !</div>'); ?>
-			<input type="text" placeholder="Username" name="username"/>
+			<input type="text" placeholder="username" name="username"/>
 			<input type="password" placeholder="Password" name="password"/>
 			<input type="password" placeholder="Re-enter password" name="password2"/>
 			<input type="text" placeholder="Description du compte" name="description"/>

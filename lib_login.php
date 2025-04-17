@@ -3,8 +3,8 @@
 	{
 		return array(
 			"srv" => "localhost",
-			"usr" => "app",
-			"pwd" => "app",
+			"usr" => "root",
+			"pwd" => "root",
 			"db" => "users"
 		);
 	}
@@ -15,7 +15,7 @@
 		$conn = new mysqli($dbi["srv"], $dbi["usr"], $dbi["pwd"], $dbi["db"]);
 		if(! $conn->connect_error)
 		{
-			$sql = "SELECT * FROM `users` WHERE USERNAME = '".$username."';";
+			$sql = "SELECT * FROM `users` WHERE username = '".$username."';";
 			$result = $conn->query($sql);
 
 			if($result->num_rows == 1)
@@ -36,13 +36,13 @@
 			$conn = new mysqli($dbi["srv"], $dbi["usr"], $dbi["pwd"], $dbi["db"]);
 			if(! $conn->connect_error)
 			{
-				$sql = "INSERT INTO users (USERNAME, PASSWORD, DESCRIPTION, admin) VALUES (?, ?, ?, 0)";
+				$sql = "INSERT INTO users (username, PASSWORD, description, admin) VALUES (?, ?, ?, 0)";
 				$stmt = $conn->prepare($sql);
 				$stmt->bind_param("sss", $username, $hashed_password, $description);
 				$stmt->execute();
 	
 				$pcontent = file_get_contents("./p/template.php");
-				$towrite = str_replace("####USERNAME####", $username, $pcontent);
+				$towrite = str_replace("####username####", $username, $pcontent);
 	
 				file_put_contents("./p/".$username.".php", $towrite);
 				mkdir("./files/".$username);
@@ -63,7 +63,7 @@
 			$conn = new mysqli($dbi["srv"], $dbi["usr"], $dbi["pwd"], $dbi["db"]);
 			if(! $conn->connect_error)
 			{
-				$sql = "DELETE FROM `users` WHERE USERNAME = '".$username."';";
+				$sql = "DELETE FROM `users` WHERE username = '".$username."';";
 				$result = $conn->query($sql);
 
 				return true;
@@ -81,15 +81,14 @@
 			$conn = new mysqli($dbi["srv"], $dbi["usr"], $dbi["pwd"], $dbi["db"]);
 			if(! $conn->connect_error)
 			{
-				$sql = "SELECT * FROM `users` WHERE USERNAME = '".$username."' AND PASSWORD = '".$password."';";
+				$sql = "SELECT * FROM `users` WHERE username = '".$username."' AND PASSWORD = '".$password."';";
 				$result = $conn->query($sql);
 
 				if($result->num_rows == 1)
 				{
 					$user_infos = $result->fetch_assoc();
 
-					session_start();
-					$_SESSION["username"] = $user_infos["USERNAME"];
+					$_SESSION["username"] = $user_infos["username"];
 					$_SESSION["admin"] = $user_infos["admin"];
 
 					return true;
@@ -115,7 +114,7 @@
 			$conn = new mysqli($dbi["srv"], $dbi["usr"], $dbi["pwd"], $dbi["db"]);
 			if(! $conn->connect_error)
 			{
-				$sql = "UPDATE `users` SET admin = ".$value." WHERE USERNAME = '".$username."';";
+				$sql = "UPDATE `users` SET admin = ".$value." WHERE username = '".$username."';";
 				$result = $conn->query($sql);
 
 				return true;

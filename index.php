@@ -5,8 +5,8 @@
 
 	if(isset($_FILES["filecontent"]) && isset($_REQUEST["description"]))
 	{
-		move_uploaded_file($_FILES["filecontent"]["tmp_name"], "/var/www/html/files/".$__connected["USERNAME"]."/".$_FILES["filecontent"]["name"]);
-		file_put_contents("/var/www/html/files/".$__connected["USERNAME"]."/".$_FILES["filecontent"]["name"].".alexdescfile", $_REQUEST["description"]);
+		move_uploaded_file($_FILES["filecontent"]["tmp_name"], "files/".$__connected["username"]."/".$_FILES["filecontent"]["name"]);
+		file_put_contents("files/".$__connected["username"]."/".$_FILES["filecontent"]["name"].".alexdescfile", $_REQUEST["description"]);
 		$UPLOADED = 1;
 	}
 ?>
@@ -19,7 +19,7 @@
 			<img src="/alexcloud.png"/>
 			<div class="menu_entries"><a href="/logout.php">Disconnect</a></div>
 			<?php if($__connected["ADMIN"] == 1) printf('<div class="menu_entries"><a href="/admin.php">Admin Page</a></div>'); ?>
-			<div class="menu_entries"><a href="/p/<?php printf("%s", $__connected["USERNAME"]); ?>.php">My Profile</a></div>
+			<div class="menu_entries"><a href="/profile.php?username=<?php echo htmlspecialchars($__connected["username"]); ?>">Profil</a></div>
 		</div>
 		<div id="joli">__________</div>
 		<div id="app">
@@ -33,12 +33,12 @@
 			</div>
 			<div id="app-files">
 				<?php
-					$files = scandir("/var/www/html/files/".$__connected["USERNAME"]."/");
+					$files = scandir("files/".$__connected["username"]."/");
 					foreach($files as $file)
 					{
 						if($file != "." && $file != ".." && ! str_contains($file, ".alexdescfile"))
 						{
-							$desc = file_get_contents("/var/www/html/files/".$__connected["USERNAME"]."/".$file.".alexdescfile");
+							$desc = file_get_contents("files/".$__connected["username"]."/".$file.".alexdescfile");
 							$desc_safe = htmlspecialchars($desc, ENT_QUOTES, 'UTF-8');
 							
 							printf("<div class='oui' fname='%s'>%s (%s)<button onclick='delete_file(this);'>Delete</button><button onclick='download_file(this);'>Download</button></div>", $file, $file, $desc_safe);

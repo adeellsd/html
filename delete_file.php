@@ -11,7 +11,7 @@
 	}
 
 	$file = basename($_POST["file"]);
-	$filepath = "/var/www/html/files/".$__connected["USERNAME"]."/".$file;
+	$filepath = "files/".$__connected["username"]."/".$file;
 
 	if (file_exists($filepath)) {
 		unlink($filepath);
