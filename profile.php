@@ -1,7 +1,7 @@
 <?php
 require("forced.php");
-require("message_functions.php");
-require("lib_login.php"); // Ajout de ce fichier
+// forced.php inclut déjà user_functions.php et lib_login.php
+require_once("message_functions.php");
 
 // Récupérer le nom d'utilisateur depuis l'URL
 $username = isset($_GET['username']) ? $_GET['username'] : '';

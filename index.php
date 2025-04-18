@@ -1,5 +1,7 @@
 <?php
+	// Importation des fichiers nécessaires
 	require("forced.php");
+	// forced.php inclut déjà user_functions.php et lib_login.php
 
 	$UPLOADED = 0;
 
@@ -8,6 +10,17 @@
 		move_uploaded_file($_FILES["filecontent"]["tmp_name"], "files/".$__connected["username"]."/".$_FILES["filecontent"]["name"]);
 		file_put_contents("files/".$__connected["username"]."/".$_FILES["filecontent"]["name"].".alexdescfile", $_REQUEST["description"]);
 		$UPLOADED = 1;
+	}
+
+	// Vérification de l'authentification
+	if (!isset($_SESSION['username'])) {
+	    header('Location: login.php');
+	    exit();
+	}
+
+	// Génération d'un token CSRF s'il n'existe pas déjà
+	if (!isset($_SESSION['csrf_token'])) {
+	    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 	}
 ?>
 <html>
@@ -76,7 +89,29 @@
 	<script>
 		function delete_file(e)
 		{
-			window.location.href = "/delete_file.php?file=" + e.parentElement.getAttribute("fname");
+			// Créer un formulaire caché pour envoyer une requête POST
+			var form = document.createElement('form');
+			form.method = 'POST';
+			form.action = '/delete_file.php';
+			form.style.display = 'none';
+			
+			// Ajouter le nom du fichier comme input
+			var input = document.createElement('input');
+			input.type = 'hidden';
+			input.name = 'file';
+			input.value = e.parentElement.getAttribute("fname");
+			form.appendChild(input);
+			
+			// Ajouter un token CSRF
+			var csrfInput = document.createElement('input');
+			csrfInput.type = 'hidden';
+			csrfInput.name = 'csrf_token';
+			csrfInput.value = '<?php echo isset($_SESSION["csrf_token"]) ? $_SESSION["csrf_token"] : bin2hex(random_bytes(32)); ?>';
+			form.appendChild(csrfInput);
+			
+			// Soumettre le formulaire
+			document.body.appendChild(form);
+			form.submit();
 		}
 
 		function download_file(e)

@@ -1,12 +1,13 @@
 <?php
-	session_start();
+	// Ne pas démarrer de session ici car forced.php le fait déjà
+	require("forced.php");
+	// forced.php inclut déjà user_functions.php et lib_login.php
 
+	// Vérification supplémentaire des droits administrateur
 	if (!isset($_SESSION["username"]) || $_SESSION["admin"] != 1) {
 		header("Location: /login.php");
 		exit();
 	}
-
-	require("forced.php");
 ?>
 
 <html>

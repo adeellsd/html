@@ -4,6 +4,9 @@
  * Contient les fonctions pour envoyer, récupérer et gérer les messages
  */
 
+// Importation des fonctions de base nécessaires
+require_once("lib_login.php"); // Pour la fonction get_db_infos
+
 /**
  * Envoie un message d'un utilisateur à un autre
  * @param string $sender_username - Nom d'utilisateur de l'expéditeur

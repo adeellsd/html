@@ -1,0 +1,4 @@
+[2025-04-18 01:00:34] [INFO] [IP: ::1] [User: admin] Action sensible: Suppression de fichier {"file":"alexcloud.png"}
+[2025-04-18 01:08:48] [WARNING] [IP: ::1] [User: anonymous] Échec de connexion: Échec d'authentification {"username":"admin","successful":false}
+[2025-04-18 01:08:58] [WARNING] [IP: ::1] [User: anonymous] Échec de connexion: Échec d'authentification {"username":"admin","successful":false}
+[2025-04-18 01:09:02] [WARNING] [IP: ::1] [User: anonymous] Échec de connexion: Échec d'authentification {"username":"admin","successful":false}

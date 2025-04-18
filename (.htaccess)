@@ -1,0 +1,55 @@
+# Fichier .htaccess principal pour renforcer la sécurité globale de l'application
+
+# Protection contre l'accès aux fichiers sensibles
+<FilesMatch "^(\.|config|security_logger\.php|security_headers\.php)">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Empêcher l'affichage du contenu des répertoires
+Options -Indexes
+
+# Protection contre les injections PHP
+<FilesMatch ".(php|php3|php4|php5|phtml|phps)$">
+  SetHandler application/x-httpd-php
+</FilesMatch>
+
+# Désactiver l'inclusion de fichiers distants
+php_flag allow_url_fopen Off
+php_flag allow_url_include Off
+
+# Protéger contre les attaques par traversée de répertoire
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} -d [OR]
+RewriteCond %{THE_REQUEST} \.\.
+RewriteRule ^ - [F]
+
+# Forcer HTTPS (à décommenter lorsque HTTPS est configuré)
+# RewriteEngine On
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Empêcher l'accès direct aux répertoires sensibles
+RedirectMatch 403 ^/config/?$
+RedirectMatch 403 ^/logs/?$
+
+# Protection contre les attaques XSS et Clickjacking
+<IfModule mod_headers.c>
+  Header set X-XSS-Protection "1; mode=block"
+  Header set X-Frame-Options "DENY"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Limiter les méthodes HTTP
+<LimitExcept GET POST HEAD>
+  deny from all
+</LimitExcept>
+
+# Configuration stricte de types MIME
+AddType application/javascript .js
+AddType text/css .css
+AddType image/jpeg .jpg .jpeg
+AddType image/png .png
+AddType image/gif .gif

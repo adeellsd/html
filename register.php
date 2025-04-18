@@ -1,50 +1,90 @@
 <?php
 	$LOGIN_PAGE = 1;
 	$LOGIN_FAILED = 0;
+	$error_message = "";
 
 	require("forced.php");
-	session_start();
 
-	if (
-		isset($_POST["username"]) &&
-		isset($_POST["password"]) &&
-		isset($_POST["password2"]) &&
-		isset($_POST["description"]) &&
-		isset($_POST["capcha"])
-	) {
-		$LOGIN_FAILED = 1;
-	
-		if ($_POST["password"] !== $_POST["password2"]) {
-			die("Les mots de passe ne correspondent pas.");
-		}
-	
-		if ($_POST["capcha"] !== $_SESSION["capcha"]) {
-			die("Captcha incorrect.");
-		}
-	
-		if (!search_user($_POST["username"])) {
-			$hashed_pwd = password_hash($_POST["password"], PASSWORD_DEFAULT);
-			create_user($_POST["username"], $hashed_pwd, $_POST["description"]);
-			header("Location: /");
-			exit();
+	// Generate CSRF token if not exists
+	if (!isset($_SESSION['csrf_token'])) {
+		$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		// Validate CSRF token
+		if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+			$error_message = "Invalid CSRF token";
+		} 
+		elseif (
+			isset($_POST["username"]) &&
+			isset($_POST["password"]) &&
+			isset($_POST["password2"]) &&
+			isset($_POST["description"]) &&
+			isset($_POST["capcha"])
+		) {
+			$LOGIN_FAILED = 1;
+			
+			// Input validation
+			$username = trim(htmlspecialchars($_POST["username"]));
+			$description = trim(htmlspecialchars($_POST["description"]));
+			
+			// Username validation
+			if (empty($username) || strlen($username) < 3 || strlen($username) > 50) {
+				$error_message = "Le nom d'utilisateur doit comporter entre 3 et 50 caractères.";
+			}
+			// Password validation
+			elseif (empty($_POST["password"]) || strlen($_POST["password"]) < 8) {
+				$error_message = "Le mot de passe doit comporter au moins 8 caractères.";
+			}
+			elseif ($_POST["password"] !== $_POST["password2"]) {
+				$error_message = "Les mots de passe ne correspondent pas.";
+			}
+			// Captcha validation
+			elseif ($_POST["capcha"] !== $_SESSION["capcha"]) {
+				$error_message = "Captcha incorrect.";
+			}
+			else {
+				if (!search_user($username)) {
+					$hashed_pwd = password_hash($_POST["password"], PASSWORD_DEFAULT);
+					create_user($username, $hashed_pwd, $description);
+					
+					// Regenerate session ID to prevent session fixation
+					session_regenerate_id(true);
+					
+					// Redirect with exit to prevent further code execution
+					header("Location: /");
+					exit();
+				} else {
+					$error_message = "Ce nom d'utilisateur existe déjà.";
+				}
+			}
 		}
 	}
 	
+	// Generate a new captcha for each page load
+	$captcha = rand(10000, 99999);
+	$_SESSION["capcha"] = $captcha;
 ?>
 <html>
 	<head>
 		<title>Register Page</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- Add Content Security Policy -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
 	</head>
 	<body>
 		<form action="#" method="POST">
-			<img src="alexcloud.png"/>
-			<?php if($LOGIN_FAILED == 1) printf('<div>Register Failed, check your entries !</div>'); ?>
-			<input type="text" placeholder="username" name="username"/>
-			<input type="password" placeholder="Password" name="password"/>
-			<input type="password" placeholder="Re-enter password" name="password2"/>
-			<input type="text" placeholder="Description du compte" name="description"/>
-			<img src="capcha.php" style="width: 50%; margin-top: 2%;"/>
-			<input type="text" placeholder="Capcha" name="capcha"/>
+			<img src="alexcloud.png" alt="Alex Cloud Logo"/>
+			<?php if(!empty($error_message)) echo '<div>'.htmlspecialchars($error_message).'</div>'; ?>
+			<input type="text" placeholder="username" name="username" maxlength="50" required/>
+			<input type="password" placeholder="Password" name="password" minlength="8" required/>
+			<input type="password" placeholder="Re-enter password" name="password2" minlength="8" required/>
+			<input type="text" placeholder="Description du compte" name="description" maxlength="255"/>
+			<img src="capcha.php" style="width: 50%; margin-top: 2%;" alt="Captcha"/>
+			<input type="text" placeholder="Capcha" name="capcha" required/>
+			<!-- Add CSRF token -->
+			<input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>"/>
 			<input type="submit" value="Register !"/>
 		</form>
 	</body>

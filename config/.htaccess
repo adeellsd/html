@@ -1,0 +1,2 @@
+# Empêcher l'accès direct à tous les fichiers dans ce répertoire (Décommenter la ligne ci-dessous)
+# Deny from all

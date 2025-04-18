@@ -1,6 +1,7 @@
 <?php
 require("forced.php");
-require("message_functions.php");
+// forced.php inclut déjà user_functions.php et lib_login.php
+require_once("message_functions.php");
 
 // Vérification de l'authentification
 if (!$__connected) {
@@ -30,7 +31,7 @@ if (isset($_POST['mark_read']) && isset($_POST['message_id']) && isset($_POST['c
             <img src="/alexcloud.png"/>
             <div class="menu_entries"><a href="/">Accueil</a></div>
             <div class="menu_entries"><a href="/logout.php">Déconnexion</a></div>
-            <div class="menu_entries"><a href="/profile/<?php echo htmlspecialchars($__connected["username"]); ?>">Mon Profil</a></div>
+            <div class="menu_entries"><a href="/profile.php?username=<?php echo htmlspecialchars($__connected["username"]); ?>">Profil</a></div>
         </div>
         <div id="joli">__________</div>
         <div id="messages-container">

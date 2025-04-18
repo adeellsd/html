@@ -1,6 +1,7 @@
 <?php
 require("forced.php");
-require("message_functions.php");
+// forced.php inclut déjà user_functions.php et lib_login.php
+require_once("message_functions.php");
 
 // Initialisation des variables de réponse
 $response = array(
